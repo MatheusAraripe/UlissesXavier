@@ -20,17 +20,22 @@ comments (invisible on GitHub) or attributes in `{ }` at the end of a
 heading.
 
 **Cover — first thing in the file.** All visible labels come from here, in
-the report's language.
+the report's language. The evaluator is always named with its tagline:
+**UlissesXavier 🤓 — O seu nerdzinho de UX** (in English, "Your UX nerd";
+in other languages, a faithful translation in `labels.tagline`). The
+template puts 🤓, the name and the tagline at the top of the cover and the
+name in the footer.
 
 ```
 <!-- cover
 {"lang":"pt-BR","title":"Avaliação de UX — Produto — 2026-10-13",
  "eyebrow":"Avaliação de UX","product":"Produto","subtitle":"O que foi avaliado, numa frase.",
- "meta":[["Data","13/10/2026"],["Modo","Varredura completa"],["Versão","`abc1234`"],["Avaliador","UlissesXavier"]],
+ "meta":[["Data","13/10/2026"],["Modo","Varredura completa"],["Versão","`abc1234`"],["Avaliador","UlissesXavier 🤓 — O seu nerdzinho de UX"]],
  "rule":"Todo achado traz evidência e fonte; uma inspeção de especialista não substitui teste com usuários.",
  "labels":{"contents":"Conteúdo","severity":"Severidade","levels":["Sem problema","Cosmético","Menor","Maior","Catástrofe"],
    "effort":"Esforço","confidence":"Confiança","suggestion":"Sugestão",
-   "glossaryHint":"Termos com sublinhado pontilhado estão explicados no Guia de conceitos."}}
+   "glossaryHint":"Termos com sublinhado pontilhado estão explicados no Guia de conceitos.",
+   "tagline":"O seu nerdzinho de UX"}}
 -->
 ```
 

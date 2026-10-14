@@ -13,6 +13,7 @@
 /* ---------- tokens ---------------------------------------------------- */
 :root {
   /* type: modular scale, ratio 1.2 from a 10pt body */
+  --emoji: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
   --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
   --t-caption: 8.3pt;
@@ -50,7 +51,7 @@
 @page {
   size: A4;
   margin: 18mm 17mm 20mm;
-  @bottom-left  { content: "UlissesXavier"; font: 7.5pt var(--font); color: #6b6f78; }
+  @bottom-left  { content: "UlissesXavier \1F913"; font: 7.5pt var(--font), var(--emoji); color: #6b6f78; }
   @bottom-right { content: counter(page) " / " counter(pages); font: 7.5pt var(--font); color: #6b6f78; }
 }
 @page :first {
@@ -116,7 +117,8 @@ h1, h2, h3 { break-after: avoid; }
   background: var(--paper);
 }
 .cover .brand { display: flex; align-items: center; gap: var(--s-2); font-weight: 650; font-size: var(--t-h3); }
-.cover .brand svg { width: 22px; height: 22px; }
+.cover .brand .mark { font-family: var(--emoji); font-size: 26px; line-height: 1; font-weight: 400; }
+.cover .brand .tagline { display: block; font-weight: 400; font-size: var(--t-body, 10.5pt); color: var(--ink-2); margin-top: 2px; }
 .cover h1 { font-size: var(--t-display); line-height: 1.1; letter-spacing: -0.02em; max-width: 14em; margin: var(--s-4) 0; }
 .cover .subtitle { font-size: var(--t-h2); color: var(--ink-2); max-width: 32em; line-height: 1.35; }
 .cover .meta {
@@ -298,7 +300,8 @@ dl.glossary dd { margin: 2px 0 0; color: var(--ink-2); font-size: 9pt; line-heig
     contents: "Contents", severity: "Severity",
     levels: ["None", "Cosmetic", "Minor", "Major", "Catastrophe"],
     effort: "Effort", confidence: "Confidence", suggestion: "Suggestion",
-    glossaryHint: "Terms with a dotted underline are explained in the concept guide."
+    glossaryHint: "Terms with a dotted underline are explained in the concept guide.",
+    tagline: "Your UX nerd"
   };
   var cover = null, toc = [], terms = [], errors = 0;
   var sheet = el("div", "sheet"), container = sheet, card = null, special = null, listClass = null;
@@ -508,6 +511,7 @@ dl.glossary dd { margin: 2px 0 0; color: var(--ink-2); font-size: 9pt; line-heig
       cover = Object.assign(cover || {}, data);
       if (data.labels) Object.assign(L, data.labels);
       if (data.lang) document.documentElement.lang = data.lang;
+      if (!(data.labels && data.labels.tagline) && /^pt/i.test(data.lang || "")) L.tagline = "O seu nerdzinho de UX";
       if (data.title) document.title = data.title;
       return;
     }
@@ -609,7 +613,7 @@ dl.glossary dd { margin: 2px 0 0; color: var(--ink-2); font-size: 9pt; line-heig
   var c = cover || {};
   var cov = el("section", "cover");
   cov.innerHTML =
-    '<div class="brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16 16l5 5"/></svg>UlissesXavier</div>' +
+    '<div class="brand"><span class="mark" aria-hidden="true">\u{1F913}</span><span>UlissesXavier<span class="tagline">' + esc(L.tagline) + "</span></span></div>" +
     '<div><div class="eyebrow">' + esc(c.eyebrow || "") + "</div><h1>" + esc(c.product || document.title) + "</h1>" +
     (c.subtitle ? '<p class="subtitle">' + inline(c.subtitle) + "</p>" : "") + "</div>" +
     '<div><dl class="meta">' + (c.meta || []).map(function (p) {

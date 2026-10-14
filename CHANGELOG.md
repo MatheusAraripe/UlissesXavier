@@ -8,6 +8,14 @@ relied on stops working the same way (a command renamed, the report folder
 moved, a profile field changed meaning), **minor** for new capabilities,
 **patch** for fixes and wording.
 
+## [1.0.1] — 2026-10-14
+
+- The evaluator now has a tagline: **UlissesXavier 🤓 — O seu nerdzinho de UX**
+  ("Your UX nerd" in English, translated into the report's language). It
+  appears at the top of the PDF cover, where 🤓 replaces the magnifier icon,
+  in the cover's "evaluator" field, in the page footer and in the feedback
+  index.
+
 ## [1.0.0] — 2026-10-14
 
 First public release.

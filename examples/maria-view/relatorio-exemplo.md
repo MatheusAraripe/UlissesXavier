@@ -2,7 +2,7 @@
 {"lang": "pt-BR", "title": "Avaliação de UX — Maria.View — 10/10/2026",
  "eyebrow": "Avaliação de UX · exemplo", "product": "Maria.View",
  "subtitle": "Segunda varredura completa: entrada, mesa de trabalho, molécula, quadros, terminal, celular — com auditoria do sistema visual, da hierarquia e dos gráficos.",
- "meta": [["Data", "10/10/2026"], ["Modo", "Varredura completa"], ["Versão", "`9acb2c4`"], ["Avaliador", "UlissesXavier"]],
+ "meta": [["Data", "10/10/2026"], ["Modo", "Varredura completa"], ["Versão", "`9acb2c4`"], ["Avaliador", "UlissesXavier 🤓 — O seu nerdzinho de UX"]],
  "rule": "Todo achado traz evidência medida e uma fonte. Uma inspeção de especialista encontra uma fração dos problemas e não substitui teste com usuários; o que precisa ser confirmado com pessoas está no fim.",
  "labels": {"contents": "Conteúdo", "severity": "Severidade", "levels": ["Sem problema", "Cosmético", "Menor", "Maior", "Catástrofe"],
             "effort": "Esforço", "confidence": "Confiança", "suggestion": "Sugestão",
