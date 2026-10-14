@@ -1,0 +1,14 @@
+{
+  "name": "ulissesxavier",
+  "description": "UlissesXavier: an evidence-based UX/UI evaluator for web apps, built for Claude Code.",
+  "owner": {
+    "name": "Matheus Araripe"
+  },
+  "plugins": [
+    {
+      "name": "ulissesxavier",
+      "source": "./plugins/ulissesxavier",
+      "description": "Walks your running web app in Chrome, measures it against peer-reviewed research, standards and published guidelines, and writes a prioritized UX/UI report."
+    }
+  ]
+}

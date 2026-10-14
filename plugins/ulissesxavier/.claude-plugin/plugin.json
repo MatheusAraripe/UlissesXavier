@@ -1,0 +1,12 @@
+{
+  "name": "ulissesxavier",
+  "version": "1.0.0",
+  "description": "UlissesXavier: an evidence-based UX/UI evaluator. Walks your running web app in Chrome, measures it, and grounds every finding in research, standards and published guidelines from the field's major references.",
+  "author": {
+    "name": "Matheus Araripe"
+  },
+  "homepage": "https://github.com/MatheusAraripe/UlissesXavier",
+  "repository": "https://github.com/MatheusAraripe/UlissesXavier",
+  "license": "MIT",
+  "keywords": ["ux", "ui", "usability", "accessibility", "wcag", "design-system", "heuristic-evaluation", "data-visualization"]
+}

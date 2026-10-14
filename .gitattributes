@@ -1,0 +1,3 @@
+# Scripts rodam no bash em qualquer sistema: sempre LF
+*.sh text eol=lf
+*.pdf binary

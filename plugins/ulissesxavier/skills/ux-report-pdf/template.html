@@ -1,0 +1,886 @@
+<!doctype html>
+<!--
+  UlissesXavier report template. Do not edit by hand per report:
+  build.sh puts the markdown report in place of the REPORT marker below,
+  and the scripts at the end turn it into the document (see SKILL.md).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UX evaluation — Product — YYYY-MM-DD</title>
+<style>
+/* ---------- tokens ---------------------------------------------------- */
+:root {
+  /* type: modular scale, ratio 1.2 from a 10pt body */
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+  --t-caption: 8.3pt;
+  --t-body: 10pt;
+  --t-h3: 12pt;
+  --t-h2: 14.4pt;
+  --t-h1: 20.7pt;
+  --t-display: 29.9pt;
+
+  /* space: 4-pt grid */
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-6: 24px; --s-8: 32px; --s-12: 48px;
+  --r-sm: 4px; --r-md: 8px;
+
+  /* ink and surfaces */
+  --ink: #16181d;
+  --ink-2: #4a4d55;
+  --ink-3: #6b6f78;
+  --hair: #e3e4e8;
+  --axis: #c3c5cc;
+  --plane: #f5f6f8;
+  --paper: #ffffff;
+  --accent: #2a78d6;
+  --accent-wash: #e8f1fc;
+  --muted-mark: #a9adb6;
+
+  /* status — always paired with an icon and a word, never color alone */
+  --sev-4: #d03b3b;
+  --sev-3: #ec835a;
+  --sev-2: #fab219;
+  --sev-1: #a9adb6;
+  --good: #0ca30c;
+}
+
+/* ---------- page ------------------------------------------------------ */
+@page {
+  size: A4;
+  margin: 18mm 17mm 20mm;
+  @bottom-left  { content: "UlissesXavier"; font: 7.5pt var(--font); color: #6b6f78; }
+  @bottom-right { content: counter(page) " / " counter(pages); font: 7.5pt var(--font); color: #6b6f78; }
+}
+@page :first {
+  margin: 0;
+  @bottom-left { content: none; }
+  @bottom-right { content: none; }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: var(--t-body)/1.5 var(--font);
+  font-kerning: normal;
+  hyphens: auto;
+}
+@media screen {
+  body { background: var(--plane); }
+  .sheet { max-width: 210mm; margin: 0 auto; background: var(--paper); padding: 18mm 17mm; }
+  .cover { max-width: 210mm; margin: 0 auto; }
+}
+
+/* ---------- type ------------------------------------------------------ */
+h1, h2, h3 { line-height: 1.2; margin: 0; font-weight: 650; letter-spacing: -0.01em; }
+h1 { font-size: var(--t-h1); margin-bottom: var(--s-4); }
+h2 { font-size: var(--t-h2); margin: var(--s-8) 0 var(--s-3); }
+h3 { font-size: var(--t-h3); margin: var(--s-6) 0 var(--s-2); }
+h2 + h3 { margin-top: var(--s-3); }
+p, ul, ol, dl { margin: 0 0 var(--s-3); }
+p, li { max-width: 68ch; }
+ul, ol { padding-left: 1.2em; }
+li { margin-bottom: var(--s-1); }
+strong { font-weight: 650; }
+code { font: 0.92em var(--mono); background: var(--plane); padding: 0 3px; border-radius: 3px; }
+a { color: inherit; text-decoration-color: var(--axis); text-underline-offset: 2px; }
+.lead { font-size: var(--t-h3); line-height: 1.45; color: var(--ink); max-width: 60ch; }
+.muted { color: var(--ink-2); }
+.small { font-size: var(--t-caption); color: var(--ink-2); }
+.eyebrow {
+  font-size: var(--t-caption); font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: var(--s-2);
+}
+.num, td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* citation markers */
+a.cite {
+  font-size: 0.72em; vertical-align: super; line-height: 0;
+  color: var(--accent); text-decoration: none; font-weight: 600; margin-left: 1px;
+}
+
+/* ---------- structure ------------------------------------------------- */
+.chapter { break-before: page; }
+.chapter > h1 { padding-bottom: var(--s-3); border-bottom: 2px solid var(--ink); margin-bottom: var(--s-6); }
+figure, .finding, .tile, .callout, .idea, table, .refs li, .walk-step { break-inside: avoid; }
+h1, h2, h3 { break-after: avoid; }
+
+/* ---------- cover ----------------------------------------------------- */
+.cover {
+  height: 297mm; padding: 26mm 20mm 22mm;
+  display: flex; flex-direction: column; justify-content: space-between;
+  background: var(--paper);
+}
+.cover .brand { display: flex; align-items: center; gap: var(--s-2); font-weight: 650; font-size: var(--t-h3); }
+.cover .brand svg { width: 22px; height: 22px; }
+.cover h1 { font-size: var(--t-display); line-height: 1.1; letter-spacing: -0.02em; max-width: 14em; margin: var(--s-4) 0; }
+.cover .subtitle { font-size: var(--t-h2); color: var(--ink-2); max-width: 32em; line-height: 1.35; }
+.cover .meta {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s-4);
+  border-top: 1px solid var(--hair); padding-top: var(--s-4);
+}
+.cover .meta dt { font-size: var(--t-caption); color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
+.cover .meta dd { margin: 0; font-weight: 600; }
+.cover .rule { font-size: var(--t-caption); color: var(--ink-3); max-width: 70ch; }
+
+/* ---------- table of contents ---------------------------------------- */
+.toc ol { list-style: none; padding: 0; columns: 2; column-gap: var(--s-8); }
+.toc li { break-inside: avoid; padding: var(--s-1) 0; border-bottom: 1px solid var(--hair); max-width: none; }
+.toc a { text-decoration: none; display: flex; gap: var(--s-2); }
+.toc .n { color: var(--ink-3); font-variant-numeric: tabular-nums; min-width: 1.6em; }
+
+/* ---------- stat tiles ------------------------------------------------ */
+.tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s-3); margin: var(--s-6) 0; }
+.tile { background: var(--plane); border-radius: var(--r-md); padding: var(--s-3) var(--s-4); }
+.tile .value { font-size: var(--t-h1); font-weight: 650; line-height: 1.1; letter-spacing: -0.01em; }
+.tile .value small { font-size: var(--t-body); font-weight: 500; color: var(--ink-2); }
+.tile .label { font-size: var(--t-caption); color: var(--ink-2); margin-top: var(--s-1); line-height: 1.35; }
+
+/* ---------- callouts -------------------------------------------------- */
+.callouts { display: flex; gap: var(--s-4); margin: var(--s-4) 0; }
+.callouts > .callout { flex: 1 1 0; }
+.callouts > .callout.urgent { flex-grow: 1.6; }
+.callout { border-radius: var(--r-md); padding: var(--s-4); background: var(--plane); }
+.callout h3 { margin: 0 0 var(--s-2); font-size: var(--t-body); text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-2); }
+.callout ol, .callout ul { margin: 0; }
+.callout.urgent { border-left: 3px solid var(--sev-4); }
+.callout.strength { border-left: 3px solid var(--good); }
+
+/* ---------- tables ---------------------------------------------------- */
+table { width: 100%; border-collapse: collapse; margin: var(--s-3) 0 var(--s-4); font-size: 9pt; }
+thead th {
+  text-align: left; font-weight: 600; color: var(--ink-2); font-size: var(--t-caption);
+  text-transform: uppercase; letter-spacing: 0.05em;
+  border-bottom: 1.5px solid var(--ink); padding: var(--s-1) var(--s-2) var(--s-2);
+}
+tbody td { padding: var(--s-2); border-bottom: 1px solid var(--hair); vertical-align: top; }
+tbody tr:last-child td { border-bottom: 0; }
+td .score, .score {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 22px; height: 22px; border-radius: 11px; padding: 0 6px;
+  font-weight: 650; font-variant-numeric: tabular-nums; background: var(--plane);
+}
+.score[data-v="1"], .score[data-v="2"] { background: #fbe5e5; }
+.score[data-v="3"] { background: #fdf2dc; }
+.score[data-v="4"] { background: #e8f1fc; }
+.score[data-v="5"] { background: #e3f4e3; }
+
+/* ---------- severity badge (icon + word + color) ---------------------- */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+  font-size: var(--t-caption); font-weight: 600; color: var(--ink);
+  border: 1px solid var(--hair); border-radius: 999px; padding: 1px 8px 1px 6px;
+}
+.badge::before { content: ""; width: 9px; height: 9px; background: var(--c, var(--sev-1)); }
+.badge.sev-4 { --c: var(--sev-4); } .badge.sev-4::before { clip-path: polygon(50% 0, 100% 100%, 0 100%); }   /* triangle */
+.badge.sev-3 { --c: var(--sev-3); } .badge.sev-3::before { transform: rotate(45deg) scale(0.85); }            /* diamond */
+.badge.sev-2 { --c: var(--sev-2); } .badge.sev-2::before { border-radius: 50%; }                             /* circle */
+.badge.sev-1 { --c: var(--sev-1); } .badge.sev-1::before { border-radius: 50%; width: 7px; height: 7px; }   /* small dot */
+.badge.good  { --c: var(--good);  } .badge.good::before  { clip-path: polygon(14% 52%, 0 66%, 38% 100%, 100% 22%, 86% 8%, 38% 72%); }
+.chip {
+  display: inline-block; font-size: var(--t-caption); color: var(--ink-2);
+  background: var(--plane); border-radius: var(--r-sm); padding: 1px 6px; white-space: nowrap;
+}
+
+/* ---------- finding card --------------------------------------------- */
+.finding {
+  border: 1px solid var(--hair); border-radius: var(--r-md);
+  padding: var(--s-4); margin: 0 0 var(--s-4); position: relative;
+}
+.finding::before {
+  content: ""; position: absolute; left: -1px; top: -1px; bottom: -1px; width: 4px;
+  border-radius: var(--r-md) 0 0 var(--r-md); background: var(--c, var(--sev-1));
+}
+.finding.sev-4 { --c: var(--sev-4); } .finding.sev-3 { --c: var(--sev-3); }
+.finding.sev-2 { --c: var(--sev-2); } .finding.sev-1 { --c: var(--sev-1); }
+.finding header, .idea header { display: flex; align-items: baseline; gap: var(--s-2); flex-wrap: wrap; margin-bottom: var(--s-3); }
+.finding .id, .idea .id { font-weight: 700; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.finding h3 { margin: 0; font-size: var(--t-h3); flex: 1 1 60%; }
+.finding .meta { display: flex; gap: var(--s-2); flex-wrap: wrap; width: 100%; }
+.finding dl { display: grid; grid-template-columns: 7.5em 1fr; gap: var(--s-1) var(--s-3); margin: 0; }
+.finding dt { color: var(--ink-3); font-size: var(--t-caption); text-transform: uppercase; letter-spacing: 0.05em; padding-top: 2px; }
+.finding dd { margin: 0; max-width: 64ch; }
+.finding dd.suggestion { font-weight: 550; }
+.finding img { max-width: 100%; border: 1px solid var(--hair); border-radius: var(--r-sm); margin-top: var(--s-2); }
+
+/* ---------- figures and charts --------------------------------------- */
+figure { margin: var(--s-4) 0 var(--s-6); }
+figure .chart-title { font-weight: 650; margin-bottom: 2px; }
+figure .chart-sub { font-size: var(--t-caption); color: var(--ink-2); margin-bottom: var(--s-2); }
+figure svg { display: block; width: 100%; height: auto; overflow: visible; }
+figcaption { font-size: var(--t-caption); color: var(--ink-2); margin-top: var(--s-2); max-width: 90ch; }
+figure img.shot { width: 100%; border: 1px solid var(--hair); border-radius: var(--r-sm); }
+.shots { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-3); }
+.legend { display: flex; gap: var(--s-4); font-size: var(--t-caption); color: var(--ink-2); margin-bottom: var(--s-2); }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+/* ---------- visual-system specimens ---------------------------------- */
+.specimen { border-top: 1px solid var(--hair); }
+.specimen > div { display: grid; grid-template-columns: 9em 6em 1fr; gap: var(--s-3); align-items: baseline; padding: var(--s-2) 0; border-bottom: 1px solid var(--hair); }
+.specimen .tok { font: var(--t-caption) var(--mono); color: var(--ink-2); }
+.specimen .val { font-size: var(--t-caption); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.specimen .sample { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: var(--s-3); margin: var(--s-3) 0; }
+.swatch { break-inside: avoid; font-size: var(--t-caption); }
+.swatch i { display: block; height: 36px; border-radius: var(--r-sm); border: 1px solid var(--hair); margin-bottom: var(--s-1); }
+.swatch b { display: block; font-weight: 600; font-family: var(--mono); }
+
+/* ---------- five-states matrix --------------------------------------- */
+.states td.st { text-align: center; white-space: nowrap; font-size: var(--t-caption); }
+.st-ok::before      { content: "✓ "; color: var(--good); font-weight: 700; }
+.st-missing::before { content: "– "; color: var(--ink-3); font-weight: 700; }
+.st-broken::before  { content: "✕ "; color: var(--sev-4); font-weight: 700; }
+.st-na { color: var(--ink-3); }
+
+/* ---------- walkthrough ---------------------------------------------- */
+.walk-step { display: grid; grid-template-columns: 2em 1fr; gap: var(--s-2) var(--s-3); padding: var(--s-3) 0; border-bottom: 1px solid var(--hair); }
+.walk-step .k { font-weight: 700; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.walk-step .qs { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s-2); margin-top: var(--s-2); }
+.walk-step .q { font-size: var(--t-caption); background: var(--plane); border-radius: var(--r-sm); padding: var(--s-1) var(--s-2); }
+.walk-step .q.no { background: #fbe5e5; }
+.walk-step .q b { display: block; }
+
+/* ---------- good list, ideas ----------------------------------------- */
+ul.good { list-style: none; padding: 0; }
+ul.good li { padding-left: 1.4em; position: relative; }
+ul.good li::before { content: "✓"; position: absolute; left: 0; color: var(--good); font-weight: 700; }
+.idea { border: 1px dashed var(--axis); border-radius: var(--r-md); padding: var(--s-4); margin-bottom: var(--s-3); }
+.idea h3 { margin-top: 0; }
+.idea dl { display: grid; grid-template-columns: 7.5em 1fr; gap: var(--s-1) var(--s-3); margin: 0; }
+.idea dt { color: var(--ink-3); font-size: var(--t-caption); text-transform: uppercase; letter-spacing: 0.05em; padding-top: 2px; }
+.idea dd { margin: 0; }
+
+/* ---------- references ----------------------------------------------- */
+ol.refs { padding-left: 2.2em; font-size: 9pt; }
+ol.refs li { margin-bottom: var(--s-2); max-width: none; }
+ol.refs li::marker { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+ol.refs .url { display: block; font: var(--t-caption) var(--mono); color: var(--ink-3); word-break: break-all; }
+ol.refs li:target { background: var(--accent-wash); }
+
+pre.tokens { font: 7.5pt/1.45 var(--mono); background: var(--plane); border-radius: var(--r-md); padding: var(--s-4); white-space: pre-wrap; }
+
+/* ---------- concept guide -------------------------------------------- */
+a.term { text-decoration: none; border-bottom: 1px dotted var(--ink-3); }
+dl.glossary { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-3) var(--s-8); margin: 0; }
+dl.glossary > div { break-inside: avoid; }
+dl.glossary dt { font-weight: 650; }
+dl.glossary dd { margin: 2px 0 0; color: var(--ink-2); font-size: 9pt; line-height: 1.45; }
+.toc .hint { font-size: var(--t-caption); color: var(--ink-3); margin: var(--s-2) 0 0; }
+
+/* ---------- render problems (counted by build.sh) -------------------- */
+.render-error { color: var(--sev-4); font: var(--t-caption) var(--mono); }
+</style>
+</head>
+<body>
+<div id="doc"></div>
+
+<script type="text/markdown" id="report-md">
+@@REPORT@@
+</script>
+
+<script>
+/* UlissesXavier markdown renderer — turns the report (the single source,
+   written once by the agent) into the designed document. Synchronous and
+   dependency-free, so it finishes before the PDF is printed. Conventions are
+   documented in SKILL.md; anything it cannot read becomes a .render-error
+   line, which build.sh counts. */
+(function () {
+  "use strict";
+  var src = document.getElementById("report-md");
+  var md = src ? src.textContent.replace(/<\\(\/?script)/gi, "<$1") : "";
+  var root = document.getElementById("doc");
+  var L = {
+    contents: "Contents", severity: "Severity",
+    levels: ["None", "Cosmetic", "Minor", "Major", "Catastrophe"],
+    effort: "Effort", confidence: "Confidence", suggestion: "Suggestion",
+    glossaryHint: "Terms with a dotted underline are explained in the concept guide."
+  };
+  var cover = null, toc = [], terms = [], errors = 0;
+  var sheet = el("div", "sheet"), container = sheet, card = null, special = null, listClass = null;
+
+  function el(tag, cls, html) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html != null) e.innerHTML = html;
+    return e;
+  }
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function slug(s) {
+    return s.toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  }
+  function add(node) { (card || container).appendChild(node); }
+  function fail(msg) { errors++; add(el("p", "render-error", esc("render error: " + msg))); }
+
+  function inline(s) {
+    var codes = [];
+    s = esc(s).replace(/`([^`]+)`/g, function (_, c) { codes.push(c); return "\u0000" + (codes.length - 1) + "\u0000"; });
+    s = s.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, '<img src="$2" alt="$1">');
+    s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2">$1</a>');
+    s = s.replace(/[ \t]*\[(\d+(?:\s*,\s*\d+)*)\](?!\()/g, function (_, list) {
+      return list.split(/\s*,\s*/).map(function (n, i) {
+        return '<a class="cite" href="#ref-' + n + '">' + (i ? "," : "") + n + "</a>";
+      }).join("");
+    });
+    s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    s = s.replace(/(^|[^*\w])\*([^*\s][^*]*?)\*(?![*\w])/g, "$1<em>$2</em>");
+    return s.replace(/\u0000(\d+)\u0000/g, function (_, i) { return "<code>" + codes[+i] + "</code>"; });
+  }
+  function attrs(s) {
+    var a = { classes: [] };
+    if (s) s.replace(/([#.])([\w-]+)|([\w-]+)=("([^"]*)"|[^\s"]+)/g, function (_, sig, name, k, v, q) {
+      if (sig === "#") a.id = name;
+      else if (sig === ".") a.classes.push(name);
+      else a[k] = q != null ? q : v;
+    });
+    return a;
+  }
+
+  /* ---- headings: ## = chapter, ### = section or card, #### = sub-section */
+  function heading(level, text, a) {
+    card = null;
+    if (level === 1) { cover = cover || {}; cover.product = cover.product || text; return; }
+    if (level === 2) {
+      var id = a.id || slug(text) || "s" + toc.length;
+      var sec = el("section", a.classes.indexOf("nobreak") >= 0 ? "" : "chapter");
+      sec.id = id;
+      special = id === "glossary" ? "glossary" : id === "references" ? "references" : null;
+      if (special) sec.classList.add(special === "glossary" ? "glossary-sec" : "refs-sec");
+      listClass = a.classes.indexOf("good") >= 0 ? "good" : null;
+      sec.appendChild(el("h1", null, inline(text)));
+      sheet.appendChild(sec);
+      container = sec;
+      toc.push({ id: id, text: text });
+      return;
+    }
+    if (level === 3 && (a.sev != null || a.classes.indexOf("idea") >= 0 || a.classes.indexOf("card") >= 0)) {
+      var art = el("article", a.sev != null ? "finding sev-" + a.sev : "idea");
+      var m = text.match(/^([A-Z]{1,3}\d+)\s*[—–-]\s*(.*)$/);
+      var head = el("header");
+      if (m) { head.appendChild(el("span", "id", esc(m[1]))); art.id = m[1].toLowerCase(); }
+      head.appendChild(el("h3", null, inline(m ? m[2] : text)));
+      if (a.sev != null) {
+        var meta = el("div", "meta");
+        meta.appendChild(el("span", "badge sev-" + a.sev, esc(L.severity + " " + a.sev + " · " + (L.levels[+a.sev] || ""))));
+        if (a.effort) meta.appendChild(el("span", "chip", esc(L.effort + " " + a.effort)));
+        if (a.confidence) meta.appendChild(el("span", "chip", esc(L.confidence + " " + a.confidence)));
+        if (a.fixed) meta.appendChild(el("span", "badge good", esc(a.fixed)));
+        head.appendChild(meta);
+      }
+      art.appendChild(head);
+      container.appendChild(art);
+      card = art;
+      return;
+    }
+    add(el(level === 3 ? "h2" : "h3", null, inline(text)));
+  }
+
+  /* ---- lists: plain, card fields, glossary, references */
+  function entriesOf(items) {
+    var out = [];
+    items.forEach(function (l) {
+      var m = l.match(/^(\s*)([-*]|\d+\.)\s+(.*)$/);
+      if (m) out.push({ ind: m[1].replace(/\t/g, "    ").length, ord: /\d/.test(m[2]), text: m[3] });
+      else if (out.length) out[out.length - 1].text += " " + l.trim();
+    });
+    return out;
+  }
+  function buildList(entries, start) {
+    var ind = entries[start].ind, ul = el(entries[start].ord ? "ol" : "ul"), i = start;
+    while (i < entries.length && entries[i].ind >= ind) {
+      if (entries[i].ind > ind) {
+        var sub = buildList(entries, i);
+        (ul.lastChild || ul).appendChild(sub.node);
+        i = sub.next;
+        continue;
+      }
+      ul.appendChild(el("li", null, inline(entries[i].text)));
+      i++;
+    }
+    return { node: ul, next: i };
+  }
+  function list(items) {
+    var entries = entriesOf(items);
+    if (!entries.length) return;
+    if (special === "glossary") return glossary(entries);
+    if (special === "references") return refs(entries);
+    if (card && entries.every(function (e) { return e.ind === 0 && /^[^:]{1,32}:\s/.test(e.text); })) {
+      var dl = el("dl");
+      entries.forEach(function (e) {
+        var k = e.text.indexOf(":"), label = e.text.slice(0, k).trim(), val = e.text.slice(k + 1).trim();
+        dl.appendChild(el("dt", null, inline(label)));
+        dl.appendChild(el("dd", label.toLowerCase() === L.suggestion.toLowerCase() ? "suggestion" : null, inline(val)));
+      });
+      card.appendChild(dl);
+      return;
+    }
+    var node = buildList(entries, 0).node;
+    if (listClass && !card) node.className = listClass;
+    add(node);
+  }
+  function glossary(entries) {
+    var dl = el("dl", "glossary");
+    entries.forEach(function (e) {
+      var m = e.text.match(/^\*\*(.+?)\*\*\s*(?:\(([^)]*)\))?\s*[—–:-]\s*(.*)$/);
+      if (!m) { errors++; dl.appendChild(el("div", "render-error", esc("glossary entry: " + e.text.slice(0, 40)))); return; }
+      var id = "g-" + slug(m[1]), d = el("div");
+      d.id = id;
+      d.appendChild(el("dt", null, inline(m[1])));
+      d.appendChild(el("dd", null, inline(m[3])));
+      dl.appendChild(d);
+      [m[1]].concat(m[2] ? m[2].split(/\s*;\s*/) : []).forEach(function (t) {
+        if (t && t.length > 1) terms.push({ term: t, id: id });
+      });
+    });
+    container.appendChild(dl);
+  }
+  function refs(entries) {
+    var ol = el("ol", "refs");
+    entries.forEach(function (e, k) {
+      var u = e.text.match(/\s(https?:\/\/\S+)\s*$/);
+      var li = el("li", null, inline(u ? e.text.slice(0, u.index) : e.text) +
+        (u ? '<span class="url">' + esc(u[1]) + "</span>" : ""));
+      li.id = "ref-" + (k + 1);
+      ol.appendChild(li);
+    });
+    container.appendChild(ol);
+  }
+
+  /* ---- tables: N/5 becomes a score pill; ✓ – ✕ become state cells */
+  function cells(r) {
+    return r.trim().replace(/^\|/, "").replace(/\|\s*$/, "").split("|").map(function (c) { return c.trim(); });
+  }
+  function table(rows, sep) {
+    var al = cells(sep).map(function (c) { return /-+:\s*$/.test(c) ? "num" : null; });
+    var t = el("table"), head = el("tr"), body = el("tbody"), states = false;
+    cells(rows[0]).forEach(function (c, k) { head.appendChild(el("th", al[k], inline(c))); });
+    t.appendChild(el("thead")).appendChild(head);
+    rows.slice(1).forEach(function (r) {
+      var tr = el("tr");
+      cells(r).forEach(function (c, k) {
+        var m;
+        if ((m = c.match(/^([1-5])\/5$/))) tr.appendChild(el("td", "num", '<span class="score" data-v="' + m[1] + '">' + m[1] + "</span>"));
+        else if ((m = c.match(/^(✓|✕|–)\s*(.*)$/))) {
+          states = true;
+          tr.appendChild(el("td", "st " + { "✓": "st-ok", "✕": "st-broken", "–": "st-missing" }[m[1]], inline(m[2])));
+        } else tr.appendChild(el("td", al[k], inline(c)));
+      });
+      body.appendChild(tr);
+    });
+    t.appendChild(body);
+    if (states) t.className = "states";
+    add(t);
+  }
+
+  /* ---- > [!urgent] Title  /  > [!strength] Title  /  > [!note] Title */
+  function quote(q) {
+    var m = q[0].match(/^\[!(\w+)\]\s*(.*)$/);
+    var box = el("div", "callout " + (m ? m[1].toLowerCase() : "note"));
+    if (m) { box.appendChild(el("h3", null, inline(m[2]))); q = q.slice(1); }
+    var items = [], para = [];
+    function flushInner() {
+      if (para.length) { box.appendChild(el("p", null, inline(para.join(" ")))); para = []; }
+      if (items.length) { box.appendChild(buildList(entriesOf(items), 0).node); items = []; }
+    }
+    q.forEach(function (l) {
+      if (/^\s*([-*]|\d+\.)\s+/.test(l) || (/^\s{2,}\S/.test(l) && items.length)) { if (para.length) flushInner(); items.push(l); }
+      else if (l.trim()) { if (items.length) flushInner(); para.push(l.trim()); }
+      else flushInner();
+    });
+    flushInner();
+    var parent = card || container, last = parent.lastElementChild;
+    if (last && last.classList.contains("callouts")) last.appendChild(box);
+    else parent.appendChild(el("div", "callouts")).appendChild(box);
+  }
+
+  /* ---- <!-- kind {json} --> blocks: cover, tiles, specimen, swatches, chart <type> */
+  function block(kind, body) {
+    var data;
+    try { data = JSON.parse(body.trim()); } catch (e) { return fail(kind + ": " + e.message); }
+    if (kind === "cover") {
+      cover = Object.assign(cover || {}, data);
+      if (data.labels) Object.assign(L, data.labels);
+      if (data.lang) document.documentElement.lang = data.lang;
+      if (data.title) document.title = data.title;
+      return;
+    }
+    if (kind === "tiles") {
+      var g = el("div", "tiles");
+      data.forEach(function (t) {
+        g.appendChild(el("div", "tile", '<div class="value">' + esc(t.value) +
+          (t.unit ? "<small>" + esc(t.unit) + "</small>" : "") + '</div><div class="label">' + inline(t.label || "") + "</div>"));
+      });
+      return add(g);
+    }
+    if (kind === "specimen") {
+      var sp = el("div", "specimen");
+      data.forEach(function (r) {
+        var row = el("div"), s = el("span", "sample");
+        row.appendChild(el("span", "tok", esc(r.token)));
+        row.appendChild(el("span", "val", esc(r.value || "")));
+        s.textContent = r.sample;
+        s.style.fontSize = Math.min(+r.size || 14, 44) + "px";
+        if (r.weight) s.style.fontWeight = r.weight;
+        if (r.upper) { s.style.textTransform = "uppercase"; s.style.letterSpacing = ".05em"; }
+        row.appendChild(s);
+        sp.appendChild(row);
+      });
+      return add(sp);
+    }
+    if (kind === "swatches") {
+      var sw = el("div", "swatches");
+      data.forEach(function (c) {
+        var ok = /^(#[0-9a-f]{3,8}|rgba?\([\d.,\s%]+\))$/i.test(c.color);
+        sw.appendChild(el("div", "swatch", '<i style="background:' + (ok ? c.color : "transparent") + '"></i><b>' +
+          esc(c.name || c.color) + "</b>" + inline(c.note || "")));
+      });
+      return add(sw);
+    }
+    var fig = el("figure"), json = document.createElement("script");
+    fig.setAttribute("data-chart", kind.split(/\s+/)[1]);
+    if (data.title) fig.appendChild(el("div", "chart-title", inline(data.title)));
+    if (data.subtitle) fig.appendChild(el("div", "chart-sub", inline(data.subtitle)));
+    json.type = "application/json";
+    json.textContent = JSON.stringify(data);
+    fig.appendChild(json);
+    if (data.caption) fig.appendChild(el("figcaption", null, inline(data.caption)));
+    add(fig);
+  }
+
+  /* ---- block parser */
+  var lines = md.replace(/\r\n?/g, "\n").split("\n"), para = [], i, m;
+  function flush() { if (para.length) { add(el("p", null, inline(para.join(" ")))); para = []; } }
+  for (i = 0; i < lines.length; i++) {
+    var line = lines[i];
+    if (!line.trim()) { flush(); continue; }
+    if ((m = line.match(/^\s*<!--\s*(cover|tiles|specimen|swatches|chart\s+\w+)\b(.*)$/))) {
+      flush();
+      var buf = [m[2]];
+      while (buf[buf.length - 1].indexOf("-->") < 0 && i + 1 < lines.length) buf.push(lines[++i]);
+      block(m[1].trim(), buf.join("\n").replace(/-->[\s\S]*$/, ""));
+      continue;
+    }
+    if (/^\s*<!--/.test(line)) { while (lines[i].indexOf("-->") < 0 && i + 1 < lines.length) i++; continue; }
+    if ((m = line.match(/^(#{1,4})\s+(.*?)\s*(?:\{([^}]*)\})?\s*$/))) { flush(); heading(m[1].length, m[2], attrs(m[3])); continue; }
+    if ((m = line.match(/^\s*```\s*(\S*)/))) {
+      flush();
+      var code = [];
+      while (++i < lines.length && !/^\s*```/.test(lines[i])) code.push(lines[i]);
+      var pre = el("pre", "tokens");
+      pre.textContent = code.join("\n");
+      add(pre);
+      continue;
+    }
+    if (/^\s*\|/.test(line) && i + 1 < lines.length && /^\s*\|?\s*:?-{2,}/.test(lines[i + 1])) {
+      flush();
+      var rows = [line], sep = lines[++i];
+      while (i + 1 < lines.length && /^\s*\|/.test(lines[i + 1])) rows.push(lines[++i]);
+      table(rows, sep);
+      continue;
+    }
+    if (/^\s*>/.test(line)) {
+      flush();
+      var q = [];
+      while (i < lines.length && /^\s*>/.test(lines[i])) q.push(lines[i++].replace(/^\s*>\s?/, ""));
+      i--;
+      quote(q);
+      continue;
+    }
+    if (/^\s*([-*]|\d+\.)\s+/.test(line)) {
+      flush();
+      var items = [];
+      while (i < lines.length && (/^\s*([-*]|\d+\.)\s+/.test(lines[i]) || (/^\s{2,}\S/.test(lines[i]) && items.length))) items.push(lines[i++]);
+      i--;
+      list(items);
+      continue;
+    }
+    para.push(line.trim());
+  }
+  flush();
+
+  /* ---- cover and contents */
+  var c = cover || {};
+  var cov = el("section", "cover");
+  cov.innerHTML =
+    '<div class="brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16 16l5 5"/></svg>UlissesXavier</div>' +
+    '<div><div class="eyebrow">' + esc(c.eyebrow || "") + "</div><h1>" + esc(c.product || document.title) + "</h1>" +
+    (c.subtitle ? '<p class="subtitle">' + inline(c.subtitle) + "</p>" : "") + "</div>" +
+    '<div><dl class="meta">' + (c.meta || []).map(function (p) {
+      return "<div><dt>" + esc(p[0]) + "</dt><dd>" + inline(p[1]) + "</dd></div>";
+    }).join("") + "</dl>" + (c.rule ? '<p class="rule">' + inline(c.rule) + "</p>" : "") + "</div>";
+  var nav = el("nav", "toc"), ol = el("ol");
+  nav.appendChild(el("h2", null, esc(L.contents)));
+  toc.forEach(function (t, k) {
+    ol.appendChild(el("li", null, '<a href="#' + esc(t.id) + '"><span class="n">' + (k + 1) + "</span>" +
+      esc(t.text.replace(/\[\d+(?:\s*,\s*\d+)*\]/g, "")) + "</a>"));
+  });
+  nav.appendChild(ol);
+  if (terms.length) nav.appendChild(el("p", "hint", inline(L.glossaryHint)));
+  sheet.insertBefore(nav, sheet.firstChild);
+  root.appendChild(cov);
+  root.appendChild(sheet);
+
+  /* ---- concept guide: the first mention of each term links to its entry */
+  var SKIP = /^(A|CODE|PRE|H1|H2|H3|DT|SCRIPT|NAV|SMALL)$/;
+  /* one pattern per entry, all its names together (longest first), so the
+     link lands on the first mention of any of them */
+  var byId = {}, order = [];
+  terms.forEach(function (t) {
+    if (!byId[t.id]) { byId[t.id] = []; order.push(t.id); }
+    byId[t.id].push(t.term);
+  });
+  order.forEach(function (id) {
+    var names = byId[id].sort(function (a, b) { return b.length - a.length; })
+      .map(function (n) { return n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); });
+    var re, t = { id: id };
+    try {
+      re = new RegExp("(^|[^\\p{L}\\p{N}])(" + names.join("|") + ")(?![\\p{L}\\p{N}])", "iu");
+    } catch (e) { return; }
+    var walker = document.createTreeWalker(sheet, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (n) {
+        for (var p = n.parentElement; p && p !== sheet; p = p.parentElement) {
+          if (SKIP.test(p.tagName) || p instanceof SVGElement || /\b(glossary-sec|refs-sec|badge|chip|tile|render-error)\b/.test(p.className)) return NodeFilter.FILTER_REJECT;
+        }
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    for (var n = walker.nextNode(); n; n = walker.nextNode()) {
+      var hit = re.exec(n.data);
+      if (!hit) continue;
+      var mid = n.splitText(hit.index + hit[1].length);
+      mid.splitText(hit[2].length);
+      var a = el("a", "term");
+      a.href = "#" + t.id;
+      a.textContent = mid.data;
+      mid.parentNode.replaceChild(a, mid);
+      break;
+    }
+  });
+  document.body.setAttribute("data-render-errors", String(errors));
+})();
+</script>
+
+<script>
+/* UlissesXavier charts — renders every <figure data-chart> from the JSON
+   inside it. Dependency-free, synchronous (runs before the PDF is printed).
+   Specs: thin marks, 4px rounded data ends, 1px recessive grid, direct
+   labels, one hue unless color carries meaning. */
+(function () {
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  var W = 680;
+  var css = getComputedStyle(document.documentElement);
+  function v(name) { return css.getPropertyValue(name).trim(); }
+  var C = {
+    ink: v("--ink"), ink2: v("--ink-2"), ink3: v("--ink-3"), hair: v("--hair"),
+    axis: v("--axis"), accent: v("--accent"), wash: v("--accent-wash"), muted: v("--muted-mark"),
+    plane: v("--plane"), good: v("--good"),
+    "sev-4": v("--sev-4"), "sev-3": v("--sev-3"), "sev-2": v("--sev-2"), "sev-1": v("--sev-1")
+  };
+  function el(name, attrs, text) {
+    var n = document.createElementNS(NS, name);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function fmt(x, d) {
+    var lang = document.documentElement.lang || "en";
+    return Number(x).toLocaleString(lang, { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 });
+  }
+  function svg(h, label) {
+    return el("svg", { viewBox: "0 0 " + W + " " + h, role: "img", "aria-label": label || "" });
+  }
+  /* horizontal bar with a 4px rounded data end and a square base */
+  function bar(x, y, w, h, fill) {
+    var r = Math.min(4, w / 2, h / 2);
+    if (w <= 0) return el("rect", { x: x, y: y, width: 0, height: h });
+    var d = "M" + x + "," + y + "h" + (w - r) + "a" + r + "," + r + " 0 0 1 " + r + "," + r +
+            "v" + (h - 2 * r) + "a" + r + "," + r + " 0 0 1 " + (-r) + "," + r + "h" + (-(w - r)) + "z";
+    return el("path", { d: d, fill: fill });
+  }
+  function text(x, y, s, o) {
+    o = o || {};
+    return el("text", {
+      x: x, y: y, "font-size": o.size || 11, fill: o.fill || C.ink2,
+      "text-anchor": o.anchor || "start", "font-weight": o.weight || 400,
+      "dominant-baseline": "middle", "font-variant-numeric": "tabular-nums"
+    }, s);
+  }
+  /* ---- bars: { max, ticks, decimals, unit, target:{value,label}, sort, items:[{label, value, tone?}] } */
+  function bars(d) {
+    var items = d.items.slice();
+    if (d.sort === "asc") items.sort(function (a, b) { return a.value - b.value; });
+    if (d.sort === "desc") items.sort(function (a, b) { return b.value - a.value; });
+    var labelW = d.labelWidth || 210, right = 44, row = 26, bh = 14, top = d.target ? 22 : 8;
+    var h = top + items.length * row + 22;
+    var max = d.max || Math.max.apply(null, items.map(function (i) { return i.value; }));
+    var plotW = W - labelW - right;
+    var s = svg(h, d.title);
+    var ticks = d.ticks || [0, max];
+    ticks.forEach(function (t) {
+      var x = labelW + plotW * t / max;
+      s.appendChild(el("line", { x1: x, x2: x, y1: top - 4, y2: h - 18, stroke: t === 0 ? C.axis : C.hair, "stroke-width": 1 }));
+      s.appendChild(text(x, h - 8, fmt(t, d.tickDecimals), { size: 9.5, fill: C.ink3, anchor: "middle" }));
+    });
+    if (d.target) {
+      var tx = labelW + plotW * d.target.value / max;
+      s.appendChild(el("line", { x1: tx, x2: tx, y1: top - 6, y2: h - 18, stroke: C.ink, "stroke-width": 1, "stroke-dasharray": "0" }));
+      s.appendChild(text(tx, 8, d.target.label, { size: 9.5, fill: C.ink, anchor: "middle", weight: 600 }));
+    }
+    items.forEach(function (it, i) {
+      var y = top + i * row + (row - bh) / 2;
+      var w = plotW * it.value / max;
+      var fill = it.tone ? C[it.tone] : (it.muted ? C.muted : C.accent);
+      s.appendChild(text(labelW - 10, y + bh / 2, it.label, { anchor: "end", fill: C.ink, size: 10.5 }));
+      s.appendChild(bar(labelW, y, w, bh, fill));
+      s.appendChild(text(labelW + w + 6, y + bh / 2, fmt(it.value, d.decimals) + (d.unit || ""), { fill: C.ink, weight: 600, size: 10.5 }));
+    });
+    return s;
+  }
+  /* ---- dumbbell: { legend:[from,to], items:[{label, from, to}] } */
+  function dumbbell(d) {
+    var labelW = d.labelWidth || 170, right = 30, row = 28, top = 8;
+    var h = top + d.items.length * row + 24;
+    var max = d.max || Math.max.apply(null, d.items.map(function (i) { return Math.max(i.from, i.to); }));
+    var plotW = W - labelW - right;
+    var s = svg(h, d.title);
+    var ticks = d.ticks || [0, max];
+    ticks.forEach(function (t) {
+      var x = labelW + plotW * t / max;
+      s.appendChild(el("line", { x1: x, x2: x, y1: top, y2: h - 18, stroke: t === 0 ? C.axis : C.hair }));
+      s.appendChild(text(x, h - 8, fmt(t), { size: 9.5, fill: C.ink3, anchor: "middle" }));
+    });
+    d.items.forEach(function (it, i) {
+      var y = top + i * row + row / 2;
+      var x1 = labelW + plotW * it.from / max, x2 = labelW + plotW * it.to / max;
+      s.appendChild(text(labelW - 10, y, it.label, { anchor: "end", fill: C.ink, size: 10.5 }));
+      s.appendChild(el("line", { x1: x1, x2: x2, y1: y, y2: y, stroke: C.axis, "stroke-width": 2, "stroke-linecap": "round" }));
+      s.appendChild(el("circle", { cx: x1, cy: y, r: 5, fill: C.muted, stroke: "#fff", "stroke-width": 2 }));
+      s.appendChild(el("circle", { cx: x2, cy: y, r: 5, fill: C.accent, stroke: "#fff", "stroke-width": 2 }));
+      var left = Math.min(x1, x2), rightX = Math.max(x1, x2);
+      var leftVal = x1 <= x2 ? it.from : it.to, rightVal = x1 <= x2 ? it.to : it.from;
+      s.appendChild(text(left - 9, y, fmt(leftVal), { anchor: "end", size: 10, fill: x1 <= x2 ? C.ink3 : C.ink, weight: x1 <= x2 ? 400 : 600 }));
+      s.appendChild(text(rightX + 9, y, fmt(rightVal), { size: 10, fill: x1 <= x2 ? C.ink : C.ink3, weight: x1 <= x2 ? 600 : 400 }));
+    });
+    return s;
+  }
+  /* ---- bullet: { items:[{label, value, unit, good, poor, max, decimals}] }  lower is better */
+  function bullet(d) {
+    var labelW = 130, right = 70, row = 40, bh = 12, top = 6;
+    var h = top + d.items.length * row + 6;
+    var plotW = W - labelW - right;
+    var s = svg(h, d.title);
+    d.items.forEach(function (it, i) {
+      var y = top + i * row;
+      var max = it.max || it.poor * 1.5;
+      function X(val) { return labelW + plotW * Math.min(val, max) / max; }
+      s.appendChild(text(labelW - 10, y + bh / 2, it.label, { anchor: "end", fill: C.ink, size: 10.5, weight: 600 }));
+      s.appendChild(el("rect", { x: labelW, y: y, width: X(it.good) - labelW, height: bh, fill: "#e3f4e3" }));
+      s.appendChild(el("rect", { x: X(it.good), y: y, width: X(it.poor) - X(it.good), height: bh, fill: "#fdf2dc" }));
+      s.appendChild(el("rect", { x: X(it.poor), y: y, width: X(max) - X(it.poor), height: bh, fill: "#fbe5e5" }));
+      var vx = X(it.value);
+      s.appendChild(el("rect", { x: vx - 1.5, y: y - 4, width: 3, height: bh + 8, fill: C.ink, rx: 1 }));
+      s.appendChild(text(labelW + plotW + 8, y + bh / 2, fmt(it.value, it.decimals) + (it.unit || ""), { fill: C.ink, weight: 650, size: 11 }));
+      [[it.good, "≤ " + fmt(it.good, it.decimals)], [it.poor, "> " + fmt(it.poor, it.decimals)]].forEach(function (p) {
+        s.appendChild(text(X(p[0]), y + bh + 11, p[1] + (it.unit || ""), { size: 9, fill: C.ink3, anchor: "middle" }));
+      });
+    });
+    return s;
+  }
+  /* ---- paired: { legend:[a,b], unit, decimals, items:[{label, a, b}] }  a = now (muted), b = proposed (accent) */
+  function paired(d) {
+    var labelW = d.labelWidth || 200, right = 60, bh = 11, gap = 3, row = 2 * bh + gap + 14, top = 6;
+    var h = top + d.items.length * row + 20;
+    var max = d.max || Math.max.apply(null, d.items.map(function (i) { return Math.max(i.a, i.b); }));
+    var plotW = W - labelW - right;
+    var s = svg(h, d.title);
+    s.appendChild(el("line", { x1: labelW, x2: labelW, y1: top, y2: h - 18, stroke: C.axis }));
+    d.items.forEach(function (it, i) {
+      var y = top + i * row;
+      s.appendChild(text(labelW - 10, y + bh + gap / 2, it.label, { anchor: "end", fill: C.ink, size: 10.5 }));
+      [[it.a, C.muted, C.ink2, 400], [it.b, C.accent, C.ink, 650]].forEach(function (p, k) {
+        var yy = y + k * (bh + gap), w = plotW * p[0] / max;
+        s.appendChild(bar(labelW, yy, w, bh, p[1]));
+        s.appendChild(text(labelW + w + 6, yy + bh / 2, fmt(p[0], d.decimals) + (d.unit || ""), { fill: p[2], weight: p[3], size: 10 }));
+      });
+    });
+    return s;
+  }
+  /* ---- matrix: { x:[labels], y:[labels], xLabel, yLabel, first:{x, y, label}, items:[{id, x, y}] } */
+  function matrix(d) {
+    var left = 96, top = 22, cw = (W - left) / d.x.length, ch = 44;
+    var h = top + d.y.length * ch + 30;
+    var s = svg(h, d.title);
+    d.y.forEach(function (yl, r) {
+      s.appendChild(text(left - 10, top + r * ch + ch / 2, yl, { anchor: "end", fill: C.ink, size: 10.5 }));
+      d.x.forEach(function (xl, c) {
+        var hot = d.first && r <= d.first.y && c <= d.first.x;
+        s.appendChild(el("rect", { x: left + c * cw + 1, y: top + r * ch + 1, width: cw - 2, height: ch - 2, rx: 4, fill: hot ? C.wash : C.plane }));
+        var ids = d.items.filter(function (it) { return it.x === c && it.y === r; }).map(function (it) { return it.id; });
+        var cx = left + c * cw + 10;
+        ids.forEach(function (id) {
+          var w = 8 + id.length * 6.6;
+          if (cx + w > left + (c + 1) * cw - 6) return;
+          s.appendChild(el("rect", { x: cx, y: top + r * ch + ch / 2 - 9, width: w, height: 18, rx: 9, fill: "#fff", stroke: hot ? C.accent : C.axis }));
+          s.appendChild(text(cx + w / 2, top + r * ch + ch / 2, id, { anchor: "middle", fill: C.ink, size: 10, weight: 600 }));
+          cx += w + 5;
+        });
+      });
+    });
+    d.x.forEach(function (xl, c) {
+      s.appendChild(text(left + c * cw + cw / 2, 9, xl, { anchor: "middle", fill: C.ink, size: 10.5, weight: 600 }));
+    });
+    if (d.first && d.first.label) {
+      s.appendChild(text(left + 6, h - 12, "■ " + d.first.label, { fill: C.accent, size: 9.5, weight: 600 }));
+    }
+    if (d.xLabel) s.appendChild(text(W, h - 12, d.xLabel, { anchor: "end", fill: C.ink3, size: 9.5 }));
+    return s;
+  }
+  var RENDER = { bars: bars, dumbbell: dumbbell, bullet: bullet, paired: paired, matrix: matrix };
+  Array.prototype.forEach.call(document.querySelectorAll("figure[data-chart]"), function (fig) {
+    var src = fig.querySelector('script[type="application/json"]');
+    if (!src) return;
+    try {
+      var data = JSON.parse(src.textContent);
+      var type = fig.getAttribute("data-chart");
+      /* the plot goes where the JSON is, so the caption stays below it */
+      var anchor = src;
+      if (data.legend) {
+        var lg = document.createElement("div");
+        lg.className = "legend";
+        [[C.muted, data.legend[0]], [C.accent, data.legend[1]]].forEach(function (p) {
+          var sp = document.createElement("span"), i = document.createElement("i");
+          i.style.background = p[0]; sp.appendChild(i); sp.appendChild(document.createTextNode(p[1])); lg.appendChild(sp);
+        });
+        fig.insertBefore(lg, anchor);
+      }
+      fig.insertBefore(RENDER[type](data), anchor);
+    } catch (e) {
+      var p = document.createElement("p");
+      p.className = "render-error";
+      p.textContent = "render error: chart " + fig.getAttribute("data-chart") + ": " + e.message;
+      fig.appendChild(p);
+      document.body.setAttribute("data-render-errors", String(+(document.body.getAttribute("data-render-errors") || 0) + 1));
+    }
+  });
+
+  /* #proof: only the figures, tiles and callouts, one under the other —
+     build.sh --proof screenshots this to check the charts cheaply */
+  if (location.hash === "#proof") {
+    var box = document.createElement("div");
+    box.className = "sheet";
+    Array.prototype.forEach.call(document.querySelectorAll("figure, .tiles, .callouts"), function (f) { box.appendChild(f); });
+    document.body.innerHTML = "";
+    document.body.appendChild(box);
+  }
+})();
+</script>
+</body>
+</html>

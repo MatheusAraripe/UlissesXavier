@@ -1,0 +1,8 @@
+# Caderno de trabalho do autor: fica só local
+CLAUDE.md
+
+# Restos de build e do sistema
+.ulissesxavier-build-*.html
+.DS_Store
+Thumbs.db
+desktop.ini
